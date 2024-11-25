@@ -193,7 +193,7 @@ h6 {
 }
 
 @media (max-width: 1200px) {
-  .nav {
+  .menubar {
     position: absolute;
     right: 10px;
   }
