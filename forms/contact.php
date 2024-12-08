@@ -1,41 +1,63 @@
 <?php
-  /**
-  * Requires the "PHP Email Form" library
-  * The "PHP Email Form" library is available only in the pro version of the template
-  * The library should be uploaded to: vendor/php-email-form/php-email-form.php
-  * For more info and help: https://bootstrapmade.com/php-email-form/
-  */
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-  // Replace contact@example.com with your real receiving email address
-  $receiving_email_address = 'contact@example.com';
+require '../vendor/autoload.php';
 
-  if( file_exists($php_email_form = '../assets/vendor/php-email-form/php-email-form.php' )) {
-    include( $php_email_form );
-  } else {
-    die( 'Unable to load the "PHP Email Form" Library!');
-  }
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $subject = $_POST['subject'];
+    $message = $_POST['message'];
 
-  $contact = new PHP_Email_Form;
-  $contact->ajax = true;
-  
-  $contact->to = $receiving_email_address;
-  $contact->from_name = $_POST['name'];
-  $contact->from_email = $_POST['email'];
-  $contact->subject = $_POST['subject'];
+    $mail = new PHPMailer(true);
 
-  // Uncomment below code if you want to use SMTP to send emails. You need to enter your correct SMTP credentials
-  /*
-  $contact->smtp = array(
-    'host' => 'example.com',
-    'username' => 'example',
-    'password' => 'pass',
-    'port' => '587'
-  );
-  */
+    try {
+        // SMTP configuration
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'sendongthap31bn@gmail.com'; // Địa chỉ email gửi
+        $mail->Password = 'jtbl aige byxi ekzo'; // Mật khẩu ứng dụng hoặc mật khẩu của tài khoản email
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
 
-  $contact->add_message( $_POST['name'], 'From');
-  $contact->add_message( $_POST['email'], 'Email');
-  $contact->add_message( $_POST['message'], 'Message', 10);
+        // Set encoding to UTF-8
+        $mail->CharSet = 'UTF-8';
+        
+        // Email content
+        $mail->setFrom('sendongthap31bn@gmail.com', 'ManLab');
+        $mail->addAddress('sendongthap31bn@gmail.com'); // Địa chỉ email nhận thông báo
+        $mail->Subject = 'Bạn nhận được thông báo từ ManLab'; // Tiêu đề email
 
-  echo $contact->send();
+        // Nội dung email
+        $mail->isHTML(true); 
+        $mail->Body = '
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <h2 style="color: #2c3e50; border-bottom: 2px solid #e74c3c; padding-bottom: 10px;">
+                Bạn nhận được thông báo từ ManLab:
+            </h2>
+            <p><strong>Tên:</strong> ' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '</p>
+            <p><strong>Email:</strong> ' . htmlspecialchars($email, ENT_QUOTES, 'UTF-8') . '</p>
+            <p><strong>Tiêu đề:</strong> ' . htmlspecialchars($subject, ENT_QUOTES, 'UTF-8') . '</p>
+            <p><strong>Nội dung:</strong></p>
+            <div style="background-color: #f9f9f9; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                ' . nl2br(htmlspecialchars($message, ENT_QUOTES, 'UTF-8')) . '
+            </div>
+            <p style="margin-top: 20px; font-size: 0.9em; color: #888;">
+                Đây là email tự động. Vui lòng không trả lời email này.
+            </p>
+        </div>';
+
+        // Gửi email
+        if ($mail->send()) {
+            echo 'success';
+        } else {
+            echo 'error: ' . $mail->ErrorInfo;
+        }
+
+    } catch (Exception $e) {
+        echo 'error: ' . $e->getMessage();
+    }
+}
 ?>
