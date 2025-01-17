@@ -3,16 +3,32 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 require '../vendor/autoload.php';
+require '../config/db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
+    $phone = $_POST['phone'];
     $email = $_POST['email'];
+    $unit_name = $_POST['unit_name'];
+    $tax_code = $_POST['tax_code'];
     $subject = $_POST['subject'];
     $message = $_POST['message'];
 
     $mail = new PHPMailer(true);
 
     try {
+        // Lưu dữ liệu vào cơ sở dữ liệu
+        $stmt = $pdo->prepare("INSERT INTO customer_request (name, phone, email, unit_name, tax_code, subject, message) VALUES (:name, :phone, :email, :unit_name, :tax_code, :subject, :message)");
+        $stmt->execute([
+            ':name' => $name,
+            ':phone' => $phone,
+            ':email' => $email,
+            ':unit_name' => $unit_name,
+            ':tax_code' => $tax_code,
+            ':subject' => $subject,
+            ':message' => $message,
+        ]);
+        
         // SMTP configuration
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
@@ -38,8 +54,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 Bạn nhận được thông báo từ ManLab:
             </h2>
             <p><strong>Tên:</strong> ' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '</p>
+            <p><strong>Số điện thoại:</strong> ' . htmlspecialchars($phone, ENT_QUOTES, 'UTF-8') . '</p>
             <p><strong>Email:</strong> ' . htmlspecialchars($email, ENT_QUOTES, 'UTF-8') . '</p>
-            <p><strong>Tiêu đề:</strong> ' . htmlspecialchars($subject, ENT_QUOTES, 'UTF-8') . '</p>
+            <p><strong>Tên đơn vị (tổ chức):</strong> ' . htmlspecialchars($unit_name, ENT_QUOTES, 'UTF-8') . '</p>
+            <p><strong>Mã số thuế đơn vị (tổ chức):</strong> ' . htmlspecialchars($tax_code, ENT_QUOTES, 'UTF-8') . '</p>
+            <p><strong>Yêu cầu:</strong> ' . htmlspecialchars($subject, ENT_QUOTES, 'UTF-8') . '</p>
             <p><strong>Nội dung:</strong></p>
             <div style="background-color: #f9f9f9; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
                 ' . nl2br(htmlspecialchars($message, ENT_QUOTES, 'UTF-8')) . '

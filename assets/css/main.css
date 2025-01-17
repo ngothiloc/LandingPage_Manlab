@@ -539,6 +539,7 @@ h6 {
 
 .footer .footer-contact p {
   margin-bottom: 5px;
+  text-align: center;
 }
 
 .footer .copyright {
@@ -1145,6 +1146,32 @@ section,
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    justify-content: flex-end;
+  }
+}
+
+/* style mobile */
+@media (max-width: 575px) {
+  .about .image-wrapper .anh .images {
+    gap: 20px;
+    height: auto;
+    width: 340px;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+@media (max-width: 575px) {
+  .about .image-wrapper .anh {
+    justify-content: center;
+    align-items: center;
+  }
+}
+/* end mobile */
+
+@media (max-width: 9920px) {
+  .about .image-wrapper .anh {
+    gap: 20px;
   }
 }
 
