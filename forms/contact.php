@@ -3,6 +3,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 require '../vendor/autoload.php';
+require '../config/db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
@@ -16,6 +17,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $mail = new PHPMailer(true);
 
     try {
+        // Lưu dữ liệu vào cơ sở dữ liệu
+        $stmt = $pdo->prepare("INSERT INTO customer_request (name, phone, email, unit_name, tax_code, subject, message) VALUES (:name, :phone, :email, :unit_name, :tax_code, :subject, :message)");
+        $stmt->execute([
+            ':name' => $name,
+            ':phone' => $phone,
+            ':email' => $email,
+            ':unit_name' => $unit_name,
+            ':tax_code' => $tax_code,
+            ':subject' => $subject,
+            ':message' => $message,
+        ]);
+        
         // SMTP configuration
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
